@@ -7,6 +7,7 @@ name = "api_axum"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "num_cpus",
  "serde",
  "tokio",
 ]
