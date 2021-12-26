@@ -12,7 +12,7 @@ pub async fn get_users() -> Json<Vec<User>> {
             Age: 25,
             First_Name: format!("First_Name{}", index),
             Last_Name: format!("Last_Name{}", index),
-            Framework: "Rust (warp)     ".to_owned(),
+            Framework: "Rust (Axum)".to_owned(),
         })
     }
     Json(users)
