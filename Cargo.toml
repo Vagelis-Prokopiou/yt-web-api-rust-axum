@@ -1,0 +1,17 @@
+[package]
+name = "api_axum"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.56"
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+path = "src/main.rs"
+name = "api_axum"
+
+[dependencies]
+tokio = { version = "*", features = ["full"] }
+axum = "*"
+serde = { version = "*", features = ["derive"] }
