@@ -11,13 +11,10 @@ fn main() {
         .build()
         .unwrap();
 
-    // Execute the future, blocking the current thread until completion
     runtime.block_on(async {
         let app = Router::new().route("/users", get(get_users));
 
         println!("\nServer running at: http://0.0.0.0:3000/users");
-
-        // run it with hyper on localhost:3000
         axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
             .serve(app.into_make_service())
             .await
