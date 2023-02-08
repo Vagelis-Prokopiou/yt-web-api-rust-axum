@@ -16,3 +16,4 @@ tokio = { version = "*", features = ["full"] }
 axum = "*"
 serde = { version = "*", features = ["derive"] }
 num_cpus = "*"
+hyper = "0.14.24"
