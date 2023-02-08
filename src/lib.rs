@@ -4,7 +4,7 @@ use crate::models::User;
 
 pub mod models;
 
-pub async fn get_users() -> Json<Vec<User>> {
+pub async fn get_users_route() -> Json<Vec<User>> {
     let mut users = Vec::with_capacity(1000);
     for index in 1..1001_u16 {
         users.push(User {
