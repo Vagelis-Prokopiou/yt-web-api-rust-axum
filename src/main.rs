@@ -24,8 +24,6 @@ pub async fn get_users_route() -> Json<Vec<User>> {
     }
     Json(users)
 }
-
-// Rquest: curl -d "param1=value1&param2=value2" -X POST http://localhost:3000/data
 fn main() {
     let runtime = Builder::new_multi_thread()
         .enable_all()
@@ -34,13 +32,10 @@ fn main() {
         .unwrap();
 
     runtime.block_on(async {
-
         let app = Router::new()
             .route("/", get(|| async { "Hello from root" }))
             .route("/api/users", get(get_users_route));
 
-
-        // run it
         let listener = tokio::net::TcpListener::bind("127.0.0.1:3000").await.unwrap();
         println!("listening on http://{}/api/users", listener.local_addr().unwrap());
         axum::serve(listener, app).await.unwrap();
