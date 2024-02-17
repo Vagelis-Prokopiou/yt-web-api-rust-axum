@@ -1,26 +1,31 @@
-use axum::body::{Body, Bytes};
-use axum::http::{Request, StatusCode};
-use axum::response::Response;
-use axum::routing::{get, post};
-use axum::{body, Router};
+use axum::routing::{get};
+use axum::{Json, Router};
 use tokio::runtime::Builder;
 
-use api_axum::get_users_route;
-
-async fn get_root_route(req: Request<Body>) -> &'static str {
-    println!("req: {:?}", req);
-    return "Hello from root";
+#[derive(serde::Serialize)]
+pub struct User {
+    pub(crate) id: u16,
+    pub(crate) age: u16,
+    pub(crate) first_name: String,
+    pub(crate) last_name: String,
+    pub(crate) framework: String,
 }
-async fn get_any_route() -> &'static str { return "Hello from any route"; }
+
+pub async fn get_users_route() -> Json<Vec<User>> {
+    let mut users = Vec::with_capacity(1000);
+    for index in 1..1001_u16 {
+        users.push(User {
+            id: index,
+            age: 25,
+            first_name: format!("first_name{}", index),
+            last_name: format!("last_name{}", index),
+            framework: "Axum".to_owned(),
+        })
+    }
+    Json(users)
+}
 
 // Rquest: curl -d "param1=value1&param2=value2" -X POST http://localhost:3000/data
-async fn post_any_route(mut req: Request<Body>) -> String {
-    println!("req: {:?}", req);
-    let body = req.body_mut();
-    let bytes = hyper::body::to_bytes(body).await.unwrap();
-    let body_str = std::str::from_utf8(&*bytes).unwrap();
-    return format!("\nHello from post any route with body: {}\n", body_str);
-}
 fn main() {
     let runtime = Builder::new_multi_thread()
         .enable_all()
@@ -29,16 +34,15 @@ fn main() {
         .unwrap();
 
     runtime.block_on(async {
-        let app = Router::new()
-            .route("/users", get(get_users_route))
-            .route("/*path", get(get_any_route))
-            .route("/*path", post(post_any_route))
-            .route("/", get(get_root_route));
 
-        println!("\nServer running at: http://0.0.0.0:3000/users");
-        axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
-            .serve(app.into_make_service())
-            .await
-            .unwrap();
+        let app = Router::new()
+            .route("/", get(|| async { "Hello from root" }))
+            .route("/api/users", get(get_users_route));
+
+
+        // run it
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:3000").await.unwrap();
+        println!("listening on http://{}/api/users", listener.local_addr().unwrap());
+        axum::serve(listener, app).await.unwrap();
     });
 }
